@@ -1,5 +1,5 @@
 {
-    "name": "@general/opentelemetry-span-transformations",
+    "name": "@intergiro/opentelemetry-span-transformations",
     "version": "0.2.0",
     "description": "Convert spans between different formats",
     "author": "Aspecto (aspecto.io)",

@@ -5,7 +5,7 @@ Utility functions to convert between different span types.
 Currently only supports converting spans from Jaeger(proto, like the one currently received from jaeger internal json api) to opentelemetry ReadableSpan.
 
 ```
-import { convertJaegerSpanToOtelReadableSpan } from '@general/opentelemetry-span-transformations';
+import { convertJaegerSpanToOtelReadableSpan } from '@intergiro/opentelemetry-span-transformations';
 const otelSpan = convertJaegerSpanToOtelReadableSpan(jaegerSpan);
 ```
 

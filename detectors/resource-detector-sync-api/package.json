@@ -1,5 +1,5 @@
 {
-    "name": "@general/opentelemetry-resource-detector-sync-api",
+    "name": "@intergiro/opentelemetry-resource-detector-sync-api",
     "version": "0.27.0",
     "description": "open telemetry api for sync resource detectors",
     "keywords": [

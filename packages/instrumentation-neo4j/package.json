@@ -1,5 +1,5 @@
 {
-    "name": "@general/opentelemetry-instrumentation-neo4j",
+    "name": "@intergiro/opentelemetry-instrumentation-neo4j",
     "version": "0.28.0",
     "description": "open telemetry instrumentation for the `neo4j` javascript driver",
     "keywords": [

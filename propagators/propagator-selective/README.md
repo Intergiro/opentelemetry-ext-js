@@ -6,14 +6,14 @@ This module provides [TextMapPropagator](https://github.com/open-telemetry/opent
 ## Installation
 
 ```bash
-npm install --save @general/opentelemetry-propagator-selective
+npm install --save @intergiro/opentelemetry-propagator-selective
 ```
 
 ##  Usage
 Example usage with [B3 Propagator](https://www.npmjs.com/package/@opentelemetry/propagator-b3)
 
 ```ts
-import { SelectivePropagator } from '@general/opentelemetry-propagator-selective';
+import { SelectivePropagator } from '@intergiro/opentelemetry-propagator-selective';
 import { B3Propagator } from '@opentelemetry/propagator-b3';
 import { propagation } from '@opentelemetry/api';
 

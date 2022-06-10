@@ -1,6 +1,6 @@
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
 import { Resource } from '@opentelemetry/resources';
-import { SyncDetector, syncDetectorToDetector } from '@general/opentelemetry-resource-detector-sync-api';
+import { SyncDetector, syncDetectorToDetector } from '@intergiro/opentelemetry-resource-detector-sync-api';
 
 class DeploymentSyncDetector implements SyncDetector {
     detect(): Resource {

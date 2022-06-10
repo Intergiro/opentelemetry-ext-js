@@ -1,5 +1,5 @@
 {
-    "name": "@general/opentelemetry-propagation-utils",
+    "name": "@intergiro/opentelemetry-propagation-utils",
     "version": "0.25.0",
     "description": "open telemetry propagation utils",
     "keywords": [

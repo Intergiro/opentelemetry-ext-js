@@ -1,5 +1,5 @@
 {
-    "name": "@general/opentelemetry-propagator-selective",
+    "name": "@intergiro/opentelemetry-propagator-selective",
     "version": "0.29.0",
     "description": "selective control on inject / extract enabled on another propagator",
     "keywords": [

@@ -1,5 +1,5 @@
 {
-    "name": "@general/opentelemetry-instrumentation-elasticsearch",
+    "name": "@intergiro/opentelemetry-instrumentation-elasticsearch",
     "version": "0.28.0",
     "description": "open telemetry instrumentation for the `elasticsearch` module",
     "keywords": [

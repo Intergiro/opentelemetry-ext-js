@@ -1,5 +1,5 @@
 {
-    "name": "@general/opentelemetry-instrumentation-mongoose",
+    "name": "@intergiro/opentelemetry-instrumentation-mongoose",
     "version": "0.28.0",
     "description": "open telemetry instrumentation for the `mongoose` module",
     "keywords": [

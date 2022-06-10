@@ -1,5 +1,5 @@
 {
-    "name": "@general/opentelemetry-instrumentation-typeorm",
+    "name": "@intergiro/opentelemetry-instrumentation-typeorm",
     "version": "0.28.0",
     "description": "open telemetry instrumentation for the `typeorm` module",
     "keywords": [
