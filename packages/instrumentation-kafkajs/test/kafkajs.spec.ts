@@ -384,7 +384,6 @@ describe('instrumentation-kafkajs', () => {
                 topic: 'topic-name-1',
                 partition: 0,
                 message: createKafkaMessage('123'),
-                heartbeat: async () => {},
             };
         };
 
@@ -721,7 +720,6 @@ describe('instrumentation-kafkajs', () => {
                     offset: '0',
                     headers: messagesSent[0].headers,
                 },
-                heartbeat: async () => {},
             };
             await runConfig.eachMessage(consumerPayload);
 
