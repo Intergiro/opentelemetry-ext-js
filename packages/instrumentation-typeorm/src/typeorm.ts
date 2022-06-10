@@ -1,4 +1,4 @@
-import { Span, SpanKind, SpanStatusCode, trace, context, diag, createContextKey, Context } from '@opentelemetry/api';
+import { Span, SpanKind, SpanStatusCode, trace, context, diag } from '@opentelemetry/api';
 import { suppressTracing } from '@opentelemetry/core';
 import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
 import { ExtendedDatabaseAttribute, TypeormInstrumentationConfig } from './types';
@@ -27,7 +27,7 @@ const selectQueryBuilderExecuteMethods: SelectQueryBuilderMethods[] = [
     'getRawAndEntities',
     'getRawMany',
 ];
-
+const rawQueryFuncName = 'query';
 type EntityManagerMethods = keyof typeorm.EntityManager;
 const functionsUsingEntityPersistExecutor: EntityManagerMethods[] = ['save', 'remove', 'softRemove', 'recover'];
 const functionsUsingQueryBuilder: EntityManagerMethods[] = [
@@ -49,14 +49,14 @@ const entityManagerMethods: EntityManagerMethods[] = [
     ...functionsUsingQueryBuilder,
 ];
 
-export class TypeormInstrumentation extends InstrumentationBase<typeof typeorm> {
+export class TypeormInstrumentation extends InstrumentationBase<any> {
     protected override _config!: TypeormInstrumentationConfig;
     constructor(config: TypeormInstrumentationConfig = {}) {
         super('opentelemetry-instrumentation-typeorm', VERSION, Object.assign({}, config));
     }
 
-    protected init(): InstrumentationModuleDefinition<typeof typeorm> {
-        const selectQueryBuilder = new InstrumentationNodeModuleFile<typeof typeorm>(
+    protected init(): InstrumentationModuleDefinition<any> {
+        const selectQueryBuilder = new InstrumentationNodeModuleFile<any>(
             'typeorm/query-builder/SelectQueryBuilder.js',
             ['>0.2.28'],
             (moduleExports, moduleVersion) => {
@@ -83,7 +83,45 @@ export class TypeormInstrumentation extends InstrumentationBase<typeof typeorm> 
             }
         );
 
-        const entityManager = new InstrumentationNodeModuleFile<typeof typeorm>(
+        const connection = new InstrumentationNodeModuleFile<any>(
+            'typeorm/connection/Connection.js',
+            ['>0.2.28 <0.3.0'],
+            (moduleExports, moduleVersion) => {
+                if (isWrapped(moduleExports.Connection.prototype?.[rawQueryFuncName])) {
+                    this._unwrap(moduleExports.Connection.prototype, rawQueryFuncName);
+                }
+                this._wrap(moduleExports.Connection.prototype, rawQueryFuncName, this._patchRawQuery(moduleVersion));
+
+                return moduleExports;
+            },
+            (moduleExports) => {
+                if (isWrapped(moduleExports.Connection.prototype?.[rawQueryFuncName])) {
+                    this._unwrap(moduleExports.Connection.prototype, rawQueryFuncName);
+                }
+                return moduleExports;
+            }
+        );
+
+        const dataSource = new InstrumentationNodeModuleFile<any>(
+            'typeorm/data-source/DataSource.js',
+            ['>=0.3.0'],
+            (moduleExports, moduleVersion) => {
+                if (isWrapped(moduleExports.DataSource.prototype?.[rawQueryFuncName])) {
+                    this._unwrap(moduleExports.DataSource.prototype, rawQueryFuncName);
+                }
+                this._wrap(moduleExports.DataSource.prototype, rawQueryFuncName, this._patchRawQuery(moduleVersion));
+
+                return moduleExports;
+            },
+            (moduleExports) => {
+                if (isWrapped(moduleExports.DataSource.prototype?.[rawQueryFuncName])) {
+                    this._unwrap(moduleExports.DataSource.prototype, rawQueryFuncName);
+                }
+                return moduleExports;
+            }
+        );
+
+        const entityManager = new InstrumentationNodeModuleFile<any>(
             'typeorm/entity-manager/EntityManager.js',
             ['>0.2.28'],
             (moduleExports, moduleVersion) => {
@@ -110,9 +148,11 @@ export class TypeormInstrumentation extends InstrumentationBase<typeof typeorm> 
             }
         );
 
-        const module = new InstrumentationNodeModuleDefinition<typeof typeorm>('typeorm', ['>0.2.28'], null, null, [
+        const module = new InstrumentationNodeModuleDefinition<any>('typeorm', ['>0.2.28'], null, null, [
             selectQueryBuilder,
             entityManager,
+            connection,
+            dataSource,
         ]);
         return module;
     }
@@ -209,6 +249,61 @@ export class TypeormInstrumentation extends InstrumentationBase<typeof typeorm> 
                     } catch (err) {}
                 }
                 const span: Span = self.tracer.startSpan(`TypeORM ${operation} ${mainTableName}`, {
+                    kind: SpanKind.CLIENT,
+                    attributes,
+                });
+
+                const contextWithSpan = trace.setSpan(context.active(), span);
+
+                const traceContext = self._config.enableInternalInstrumentation
+                    ? contextWithSpan
+                    : suppressTypeormInternalTracing(contextWithSpan);
+
+                const contextWithSuppressTracing = self._config?.suppressInternalInstrumentation
+                    ? suppressTracing(traceContext)
+                    : traceContext;
+
+                return context.with(contextWithSuppressTracing, () =>
+                    self._endSpan(() => original.apply(this, arguments), span)
+                );
+            };
+        };
+    }
+
+    private getOperationName(statement: string) {
+        let operation = 'raw query';
+        if (typeof statement === 'string') {
+            statement = statement.trim();
+            try {
+                operation = statement.split(' ')[0].toUpperCase();
+            } catch (e) {}
+        }
+
+        return operation;
+    }
+
+    private _patchRawQuery(moduleVersion: string) {
+        const self = this;
+        return (original: any) => {
+            return function () {
+                if (isTypeormInternalTracingSuppressed(context.active())) {
+                    return original.apply(this, arguments);
+                }
+                const conn: typeorm.Connection = this;
+                const sql = arguments[0];
+                const operation = self.getOperationName(sql);
+                const connectionOptions: any = conn.options;
+                const attributes = {
+                    [SemanticAttributes.DB_SYSTEM]: connectionOptions.type,
+                    [SemanticAttributes.DB_USER]: connectionOptions.username,
+                    [SemanticAttributes.NET_PEER_NAME]: connectionOptions.host,
+                    [SemanticAttributes.NET_PEER_PORT]: connectionOptions.port,
+                    [SemanticAttributes.DB_NAME]: connectionOptions.database,
+                    [SemanticAttributes.DB_OPERATION]: operation,
+                    [SemanticAttributes.DB_STATEMENT]: sql,
+                };
+
+                const span: Span = self.tracer.startSpan(`TypeORM ${operation}`, {
                     kind: SpanKind.CLIENT,
                     attributes,
                 });

@@ -4,7 +4,7 @@ import { AddressInfo } from 'net';
 
 import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
 import { ReadableSpan } from '@opentelemetry/sdk-trace-base';
-import { getTestSpans } from 'opentelemetry-instrumentation-testing-utils';
+import { getTestSpans } from '@opentelemetry/contrib-test-utils';
 
 import expect from 'expect';
 import { Server, Socket } from 'socket.io';
@@ -38,7 +38,7 @@ export const createServerInstance = (server?: http.Server) => {
 };
 
 export const getSocketIoSpans = (): ReadableSpan[] =>
-    getTestSpans().filter((s) => s.attributes[SemanticAttributes.MESSAGING_SYSTEM] === 'socket.io');
+    getTestSpans().filter((s) => s.attributes[SemanticAttributes.MESSAGING_SYSTEM] === 'socket.io') as ReadableSpan[];
 
 export const expectSpan = (spanName: string, callback?: (span: ReadableSpan) => void, spanCount?: number) => {
     const spans = getSocketIoSpans();

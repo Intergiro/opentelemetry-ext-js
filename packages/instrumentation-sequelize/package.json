@@ -1,6 +1,6 @@
 {
-    "name": "@general/opentelemetry-instrumentation-sequelize",
-    "version": "0.25.2",
+    "name": "@intergiro/opentelemetry-instrumentation-sequelize",
+    "version": "0.28.0",
     "description": "open telemetry instrumentation for the `sequelize` module",
     "keywords": [
         "sequelize",
@@ -27,9 +27,9 @@
     },
     "scripts": {
         "build": "tsc",
-        "prepare": "yarn run build",
-        "test": "mocha --require opentelemetry-instrumentation-testing-utils",
-        "test:jaeger": "OTEL_EXPORTER_JAEGER_AGENT_HOST=localhost mocha --require opentelemetry-instrumentation-testing-utils",
+        "prepare": "yarn build",
+        "test": "mocha --require @opentelemetry/contrib-test-utils",
+        "test:jaeger": "OTEL_EXPORTER_JAEGER_AGENT_HOST=localhost mocha --require @opentelemetry/contrib-test-utils",
         "test:ci": "yarn test",
         "watch": "tsc -w",
         "version:update": "node ../../scripts/version-update.js",
@@ -39,22 +39,22 @@
         "url": "https://github.com/aspecto-io/opentelemetry-ext-js/issues"
     },
     "peerDependencies": {
-        "@opentelemetry/api": "^1.0.1"
+        "@opentelemetry/api": "^1.0.0"
     },
     "dependencies": {
-        "@opentelemetry/core": "^0.25.0",
-        "@opentelemetry/instrumentation": "^0.25.0",
-        "@opentelemetry/semantic-conventions": "^0.25.0"
+        "@opentelemetry/core": "^1.0.0",
+        "@opentelemetry/instrumentation": "^0.28.0",
+        "@opentelemetry/semantic-conventions": "^1.0.0"
     },
     "devDependencies": {
-        "@opentelemetry/api": "^1.0.2",
-        "@opentelemetry/sdk-trace-base": "^0.25.0",
+        "@opentelemetry/api": "^1.0.0",
+        "@opentelemetry/contrib-test-utils": "^0.30.0",
+        "@opentelemetry/sdk-trace-base": "1.2.0",
         "@types/mocha": "^8.2.2",
         "expect": "^26.6.2",
         "mocha": "^8.4.0",
         "mysql2": "^2.2.5",
-        "opentelemetry-instrumentation-mocha": "0.0.1-rc.6",
-        "opentelemetry-instrumentation-testing-utils": "^0.25.0",
+        "opentelemetry-instrumentation-mocha": "0.0.1-rc.7",
         "pg": "^8.4.2",
         "sequelize": "^5.22.0",
         "sqlite3": "^5.0.2",
