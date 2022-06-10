@@ -6,7 +6,7 @@ on:
 
 jobs:
   prettier:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, common]
 
     steps:
       - uses: actions/checkout@v2
@@ -15,7 +15,7 @@ jobs:
         run: yarn prettier:check
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, common]
     services:
       mongo:
         image: mongo
