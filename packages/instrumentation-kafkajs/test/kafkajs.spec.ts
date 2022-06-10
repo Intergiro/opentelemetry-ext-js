@@ -2,11 +2,11 @@ import 'mocha';
 import expect from 'expect';
 import { KafkaJsInstrumentation, KafkaJsInstrumentationConfig } from '../src';
 import { ReadableSpan } from '@opentelemetry/sdk-trace-base';
-import { propagation, SpanKind, SpanStatusCode, Span } from '@opentelemetry/api';
+import { propagation, context, SpanKind, SpanStatusCode, Span } from '@opentelemetry/api';
 import { MessagingDestinationKindValues, SemanticAttributes } from '@opentelemetry/semantic-conventions';
-import { getTestSpans } from 'opentelemetry-instrumentation-testing-utils';
+import { getTestSpans, registerInstrumentationTesting } from '@opentelemetry/contrib-test-utils';
 
-const instrumentation = new KafkaJsInstrumentation();
+const instrumentation = registerInstrumentationTesting(new KafkaJsInstrumentation());
 
 import * as kafkajs from 'kafkajs';
 import {
@@ -23,9 +23,12 @@ import {
     KafkaMessage,
 } from 'kafkajs';
 import { DummyPropagation } from './DummyPropagation';
+import { W3CBaggagePropagator, CompositePropagator } from '@opentelemetry/core';
 
 describe('instrumentation-kafkajs', () => {
-    propagation.setGlobalPropagator(new DummyPropagation());
+    propagation.setGlobalPropagator(
+        new CompositePropagator({ propagators: [new DummyPropagation(), new W3CBaggagePropagator()] })
+    );
 
     const kafka = new Kafka({
         clientId: 'unit-tests',
@@ -123,7 +126,7 @@ describe('instrumentation-kafkajs', () => {
                 expect(span.attributes[SemanticAttributes.MESSAGING_DESTINATION]).toStrictEqual('topic-name-1');
 
                 expect(messagesSent.length).toBe(1);
-                expectKafkaHeadersToMatchSpanContext(messagesSent[0], span);
+                expectKafkaHeadersToMatchSpanContext(messagesSent[0], span as ReadableSpan);
             });
 
             it('send two messages', async () => {
@@ -145,8 +148,8 @@ describe('instrumentation-kafkajs', () => {
                 expect(spans[1].name).toStrictEqual('topic-name-1');
 
                 expect(messagesSent.length).toBe(2);
-                expectKafkaHeadersToMatchSpanContext(messagesSent[0], spans[0]);
-                expectKafkaHeadersToMatchSpanContext(messagesSent[1], spans[1]);
+                expectKafkaHeadersToMatchSpanContext(messagesSent[0], spans[0] as ReadableSpan);
+                expectKafkaHeadersToMatchSpanContext(messagesSent[1], spans[1] as ReadableSpan);
             });
 
             it('send batch', async () => {
@@ -182,7 +185,7 @@ describe('instrumentation-kafkajs', () => {
 
                 expect(messagesSent.length).toBe(3);
                 for (let i = 0; i < 3; i++) {
-                    expectKafkaHeadersToMatchSpanContext(messagesSent[i], spans[i]);
+                    expectKafkaHeadersToMatchSpanContext(messagesSent[i], spans[i] as ReadableSpan);
                 }
             });
         });
@@ -381,6 +384,7 @@ describe('instrumentation-kafkajs', () => {
                 topic: 'topic-name-1',
                 partition: 0,
                 message: createKafkaMessage('123'),
+                heartbeat: async () => {},
             };
         };
 
@@ -683,18 +687,26 @@ describe('instrumentation-kafkajs', () => {
         });
 
         it('context injected in producer is extracted in consumer', async () => {
+            let callbackBaggage;
             consumer.run({
-                eachMessage: async (payload: EachMessagePayload): Promise<void> => {},
+                eachMessage: async (payload: EachMessagePayload): Promise<void> => {
+                    callbackBaggage = propagation.getBaggage(context.active());
+                },
             });
 
-            await producer.send({
-                topic: 'topic-name-1',
-                messages: [
-                    {
-                        value: 'testing message content',
-                    },
-                ],
-            });
+            await context.with(
+                propagation.setBaggage(context.active(), propagation.createBaggage({ foo: { value: 'bar' } })),
+                async () => {
+                    await producer.send({
+                        topic: 'topic-name-1',
+                        messages: [
+                            {
+                                value: 'testing message content',
+                            },
+                        ],
+                    });
+                }
+            );
 
             expect(messagesSent.length).toBe(1);
             const consumerPayload: EachMessagePayload = {
@@ -709,6 +721,7 @@ describe('instrumentation-kafkajs', () => {
                     offset: '0',
                     headers: messagesSent[0].headers,
                 },
+                heartbeat: async () => {},
             };
             await runConfig.eachMessage(consumerPayload);
 
@@ -717,6 +730,8 @@ describe('instrumentation-kafkajs', () => {
             const [producerSpan, consumerSpan] = spans;
             expect(consumerSpan.spanContext().traceId).toStrictEqual(producerSpan.spanContext().traceId);
             expect(consumerSpan.parentSpanId).toStrictEqual(producerSpan.spanContext().spanId);
+            expect(callbackBaggage.getAllEntries().length).toBe(1);
+            expect(callbackBaggage.getEntry('foo').value).toStrictEqual('bar');
         });
 
         it('context injected in producer is extracted as links in batch consumer', async () => {

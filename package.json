@@ -23,6 +23,8 @@
     "workspaces": [
         "packages/*",
         "detectors/*",
-        "detectors/node/*"
+        "detectors/node/*",
+        "propagators/*",
+        "examples/*"
     ]
 }

@@ -2,8 +2,8 @@ import 'mocha';
 import expect from 'expect';
 import { SpanStatusCode } from '@opentelemetry/api';
 import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
-import { TypeormInstrumentation, TypeormInstrumentationConfig } from '../src';
-import { getTestSpans } from 'opentelemetry-instrumentation-testing-utils';
+import { TypeormInstrumentation } from '../src';
+import { getTestSpans } from '@opentelemetry/contrib-test-utils';
 
 const instrumentation = new TypeormInstrumentation();
 import * as typeorm from 'typeorm';
@@ -120,7 +120,7 @@ describe('EntityManager', () => {
     });
 
     describe('multiple connections', () => {
-        const options2: typeorm.ConnectionOptions = {
+        const options2: any = {
             name: 'connection2',
             type: 'sqlite',
             database: 'connection2.db',

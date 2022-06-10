@@ -18,10 +18,21 @@ export class User {
     }
 }
 
-export const defaultOptions: typeorm.ConnectionOptions = {
+// type is typeorm.ConnectionOptions for <0.3.0
+// and typeorm.DataSourceOptions for >=0.3.0
+export const defaultOptions: any = {
     type: 'sqlite',
     database: ':memory:',
     dropSchema: true,
     synchronize: true,
     entities: [User],
+};
+
+export const rawQueryOptions: any = {
+    type: 'sqlite',
+    database: ':memory:',
+    dropSchema: true,
+    synchronize: true,
+    entities: [User],
+    name: 'rawQuery',
 };

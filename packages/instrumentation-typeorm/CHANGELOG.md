@@ -3,6 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.28.0](https://github.com/aspecto-io/opentelemetry-ext-js/compare/opentelemetry-instrumentation-typeorm@0.27.1...opentelemetry-instrumentation-typeorm@0.28.0) (2022-06-02)
+
+
+### Features
+
+* support core experimental versions ^0.28.0 ([#228](https://github.com/aspecto-io/opentelemetry-ext-js/issues/228)) ([6eaec0e](https://github.com/aspecto-io/opentelemetry-ext-js/commit/6eaec0e6509edf066c6feb63504d4e9dd309c5ae))
+
+
+
+
+
+## [0.27.1](https://github.com/aspecto-io/opentelemetry-ext-js/compare/opentelemetry-instrumentation-typeorm@0.27.0...opentelemetry-instrumentation-typeorm@0.27.1) (2022-04-13)
+
+
+### Features
+
+* add amqplib example ([#209](https://github.com/aspecto-io/opentelemetry-ext-js/issues/209)) ([ea1334a](https://github.com/aspecto-io/opentelemetry-ext-js/commit/ea1334a0c812d20ae0e3d9d9c5e8163b5b268ed3))
+
+
+
+
+
+# [0.27.0](https://github.com/aspecto-io/opentelemetry-ext-js/compare/opentelemetry-instrumentation-typeorm@0.26.1...opentelemetry-instrumentation-typeorm@0.27.0) (2021-12-27)
+
+**Note:** Version bump only for package opentelemetry-instrumentation-typeorm
+
+
+
+
+
+## [0.26.1](https://github.com/aspecto-io/opentelemetry-ext-js/compare/opentelemetry-instrumentation-typeorm@0.26.0...opentelemetry-instrumentation-typeorm@0.26.1) (2021-11-29)
+
+
+### Features
+
+* adding support for typeorm raw queries ([#198](https://github.com/aspecto-io/opentelemetry-ext-js/issues/198)) ([1ea8daf](https://github.com/aspecto-io/opentelemetry-ext-js/commit/1ea8daf9d7f2fa94fcb8afd84be1c62728487a05))
+
+
+
+
+
+# [0.26.0](https://github.com/aspecto-io/opentelemetry-ext-js/compare/opentelemetry-instrumentation-typeorm@0.25.0...opentelemetry-instrumentation-typeorm@0.26.0) (2021-10-26)
+
+**Note:** Version bump only for package opentelemetry-instrumentation-typeorm
+
+
+
+
+
 # [0.25.0](https://github.com/aspecto-io/opentelemetry-ext-js/compare/opentelemetry-instrumentation-typeorm@0.24.1...opentelemetry-instrumentation-typeorm@0.25.0) (2021-09-19)
 
 **Note:** Version bump only for package opentelemetry-instrumentation-typeorm

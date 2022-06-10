@@ -12,8 +12,9 @@ yarn-error.log*
 packages/**/package-lock.json
 package-lock.json
 
-# VsCode configs
+# IDE configs
 .vscode/
+.idea
 
 # typescript
 *.tsbuildinfo

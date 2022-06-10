@@ -3,7 +3,7 @@ import type { ReadableSpan } from '@opentelemetry/sdk-trace-base';
 import expect from 'expect';
 import { ExpressInstrumentationAttributes } from '../src/types';
 import type express from 'express';
-import { getTestSpans } from 'opentelemetry-instrumentation-testing-utils';
+import { getTestSpans } from '@opentelemetry/contrib-test-utils';
 
 export interface expectRouteAttributesAdvancedOptions {
     expectedParams?: Record<string, string>;
@@ -74,5 +74,5 @@ export const errorMiddleware = (_req: express.Request, res: express.Response, ne
 };
 
 export const getExpressSpans = (): ReadableSpan[] => {
-    return getTestSpans().filter((s) => s.instrumentationLibrary.name?.endsWith('express'));
+    return getTestSpans().filter((s) => s.instrumentationLibrary.name?.endsWith('express')) as ReadableSpan[];
 };
