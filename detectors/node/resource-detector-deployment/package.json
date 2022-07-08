@@ -1,6 +1,6 @@
 {
     "name": "@intergiro/opentelemetry-resource-detector-deployment",
-    "version": "0.27.0",
+    "version": "0.27.1",
     "description": "open telemetry resource detector for deployment",
     "keywords": [
         "opentelemetry"
@@ -36,9 +36,9 @@
         "@opentelemetry/api": "^1.0.0"
     },
     "dependencies": {
-        "@opentelemetry/resources": "^1.0.0",
+        "@opentelemetry/resources": "~1.2.0",
         "@opentelemetry/semantic-conventions": "^1.0.0",
-        "@intergiro/opentelemetry-resource-detector-sync-api": "^0.27.0"
+        "@intergiro/opentelemetry-resource-detector-sync-api": "^0.27.1"
     },
     "devDependencies": {
         "@opentelemetry/api": "^1.0.0",
