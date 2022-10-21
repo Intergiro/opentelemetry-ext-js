@@ -1,6 +1,6 @@
 {
     "name": "@intergiro/opentelemetry-resource-detector-git",
-    "version": "0.27.1",
+    "version": "0.28.0",
     "description": "open telemetry resource detector for git",
     "keywords": [
         "opentelemetry"
@@ -37,9 +37,9 @@
         "@opentelemetry/api": "^1.0.0"
     },
     "dependencies": {
-        "@opentelemetry/resources": "~1.2.0",
+        "@opentelemetry/resources": "~1.3.0",
         "@opentelemetry/semantic-conventions": "^1.0.0",
-        "@intergiro/opentelemetry-resource-detector-sync-api": "^0.27.1",
+        "@intergiro/opentelemetry-resource-detector-sync-api": "^0.28.0",
         "uuid": "^8.3.2"
     },
     "devDependencies": {
